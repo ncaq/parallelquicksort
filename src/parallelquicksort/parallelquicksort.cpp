@@ -145,7 +145,7 @@ namespace {
                     ++i;
                 }
 
-                // 基準値以下の値が見つかるまで左方向へ進めていく 
+                // 基準値以下の値が見つかるまで左方向へ進めていく
                 while (*j > pivot) {
                     --j;
                 }
@@ -493,7 +493,7 @@ namespace {
 #else
         ofs << u8"配列の要素数,std::sort,クイックソート,std::thread,OpenMP,TBB,tbb::parallel_sort,std::sort (Parallelism TS)\n";
 #endif
-        
+
         auto issuccess = true;
 
         auto n = N;
@@ -512,12 +512,12 @@ namespace {
                 vecar[0] = elapsed_time(checktype, [](auto & vec) { std::sort(vec.begin(), vec.end()); }, n, ofs);
                 vecar[1] = elapsed_time(checktype, [](auto & vec) { quick_sort(vec.begin(), vec.end()); }, n, ofs);
                 vecar[2] = elapsed_time(checktype, [](auto & vec) { quick_sort_thread(vec.begin(), vec.end()); }, n, ofs);
-                
+
 #if _OPENMP >= 200805
                 vecar[3] = elapsed_time(checktype, [](auto & vec) { quick_sort_openmp(vec.begin(), vec.end()); }, n, ofs);
 #endif
                 vecar[4] = elapsed_time(checktype, [](auto & vec) { quick_sort_tbb(vec.begin(), vec.end()); }, n, ofs);
-                
+
 #ifdef __INTEL_COMPILER
                 vecar[5] = elapsed_time(checktype, [](auto & vec) { quick_sort_cilk(vec.begin(), vec.end()); }, n, ofs);
 #endif
@@ -526,7 +526,7 @@ namespace {
 #if defined(_MSC_VER) && !defined(__INTEL_COMPILER)
                 vecar[7] = elapsed_time(checktype, [](auto & vec) { std::sort(std::execution::par, vec.begin(), vec.end()); }, n, ofs);
 #endif
-                vecar[8] = elapsed_time(checktype, [](auto & vec) { std::sort(pstl::execution::par, vec.begin(), vec.end()); }, n, ofs);
+                vecar[8] = elapsed_time(checktype, [](auto & vec) { std::sort(__pstl::execution::par, vec.begin(), vec.end()); }, n, ofs);
 
                 ofs << std::endl;
 
@@ -617,18 +617,18 @@ namespace {
             BOOST_ASSERT(!"switchのdefaultに来てしまった！");
             break;
         }
-                
+
         std::fread(vec.data(), sizeof(std::int32_t), vec.size(), fp.get());
 
         auto elapsed_time = 0.0;
-        
+
         for (auto i = 1; i <= CHECKLOOP; i++) {
             auto const beg = high_resolution_clock::now();
             func(vec);
             auto const end = high_resolution_clock::now();
 
             elapsed_time += (duration_cast<duration<double>>(end - beg)).count();
-            
+
             if (i != CHECKLOOP) {
                 std::rewind(fp.get());
                 std::fread(vec.data(), sizeof(std::int32_t), vec.size(), fp.get());
